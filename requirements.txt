@@ -1,0 +1,8 @@
+python-dotenv
+pydantic
+pandas
+
+chromadb
+sentence-transformers
+
+pytest
