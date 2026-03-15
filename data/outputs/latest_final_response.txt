@@ -1,0 +1,23 @@
+Query: best credit card for groceries and dining with low annual fee
+
+Here are the top recommended cards based on your preferences:
+
+1. Scotiabank American Express Card (Scotiabank)
+   - Rewards type: scene+
+   - Best categories: grocery,dining,travel,transit,student,cashback
+   - Fee: no annual fee
+   - Why it fits: matches your target categories: grocery, dining; has no annual fee
+
+2. Scotiabank Scene+ Visa Card (Scotiabank)
+   - Rewards type: scene+
+   - Best categories: grocery,dining,travel,student,cashback
+   - Fee: no annual fee
+   - Why it fits: matches your target categories: grocery, dining; has no annual fee
+
+3. Scotiabank Scene+ Visa Card for Students (Scotiabank)
+   - Rewards type: scene+
+   - Best categories: grocery,dining,travel,student,cashback
+   - Fee: no annual fee
+   - Why it fits: matches your target categories: grocery, dining; has no annual fee
+
+Best overall choice: Scotiabank American Express Card because it ranks highest for your current preferences.

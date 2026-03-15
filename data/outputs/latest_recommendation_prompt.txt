@@ -1,0 +1,89 @@
+You are a credit card recommendation assistant.
+Use the user profile, recommended cards, and supporting card context below to explain the best options.
+Prioritize accuracy and do not invent benefits that are not in the context.
+
+USER QUERY:
+best credit card for groceries and dining with low annual fee
+
+USER PROFILE:
+- income: 70000
+- household_income: None
+- max_annual_fee: 180
+- preferred_rewards: membership_rewards
+- target_categories: ['grocery', 'dining']
+- issuer: None
+- network: None
+
+TOP RECOMMENDED CARDS:
+
+================================================================================
+Card Name: Scotiabank American Express Card
+Issuer: Scotiabank
+Network: American Express
+Annual Fee: 0.0
+Rewards Type: scene+
+Best Categories: grocery,dining,travel,transit,student,cashback
+Welcome Bonus: 
+Eligibility: 
+Reason from recommender: matches your target categories: grocery, dining; has no annual fee
+Recommendation Score: 8.5
+Supporting Context:
+- No supporting chunks found.
+
+================================================================================
+Card Name: Scotiabank Scene+ Visa Card
+Issuer: Scotiabank
+Network: American Express
+Annual Fee: 0.0
+Rewards Type: scene+
+Best Categories: grocery,dining,travel,student,cashback
+Welcome Bonus: 
+Eligibility: 
+Reason from recommender: matches your target categories: grocery, dining; has no annual fee
+Recommendation Score: 8.5
+Supporting Context:
+- No supporting chunks found.
+
+================================================================================
+Card Name: Scotiabank Scene+ Visa Card for Students
+Issuer: Scotiabank
+Network: American Express
+Annual Fee: 0.0
+Rewards Type: scene+
+Best Categories: grocery,dining,travel,student,cashback
+Welcome Bonus: 
+Eligibility: 
+Reason from recommender: matches your target categories: grocery, dining; has no annual fee
+Recommendation Score: 8.5
+Supporting Context:
+[Chunk 1 | Section: overview]
+Card Name: Scotiabank Scene+ Visa Card for Students
+Issuer: Scotiabank
+Country: Canada
+Network: American Express
+Card Type: Credit Card
+Annual Fee: 0.0
+Monthly Fee: Not available
+Rewards Type: scene+
+Best Categories: grocery,dining,travel,student,cashback
+Welcome Bonus: Not available
+Eligibility: Not available
+Personal Income Requirement: Not available
+Household Income Requirement: Not available
+FX Fee: Not available
+Lounge Access: Not available
+Insurance Summary: Not available
+Section: overview
+Section Text: Scotiabank Scene+ Visa Card for Students Scene+ Student Banking Bundle The Student Hub Programs Programs Programs & Services Programs & Services Programs & Services Scene+ Indigenous Peoples Bank The Rest savings program Hockey for All Scotia Perks Referral Program Specialty Services Specialty Services Specialty Services StartRight program for Newcomers Higher credit limit for Nova Credit Seniors Resource Centre The Student Hub Healthcare+ Banking Programs Lawyer Banking Program Offers Offers Offers Credit bureau reports Scene+ Student Banking Bundle Willful TurboTax Rates & Fees Rates & Fees Bank fees Bank fees Bank fees Bank account fees at a glance Credit card fees at a gla
+
+================================================================================
+
+INSTRUCTIONS FOR FINAL ANSWER:
+1. Recommend the top 3 cards for this user.
+2. Explain why each card matches the user's needs.
+3. Mention annual fee tradeoffs clearly.
+4. Mention reward type fit clearly.
+5. If one card is best overall, say why.
+6. If a card is strong but expensive, say that explicitly.
+7. Keep the answer practical and user-friendly.
+8. Do not mention cards that are not in the recommended list unless necessary.
