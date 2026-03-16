@@ -1,6 +1,6 @@
-from pathlib import Path
 import importlib.util
 import sys
+from pathlib import Path
 from typing import Any, Dict
 
 import pandas as pd
@@ -15,9 +15,6 @@ st.set_page_config(
 
 
 def load_generate_response():
-    """
-    Loads generate_response() from scripts/genrate_response.py
-    """
     candidate_paths = [
         Path(__file__).resolve().parent / "genrate_response.py",
         Path("scripts/genrate_response.py").resolve(),
@@ -34,9 +31,7 @@ def load_generate_response():
                 if hasattr(module, "generate_response"):
                     return module.generate_response
 
-    raise ImportError(
-        "Could not find generate_response() in scripts/genrate_response.py"
-    )
+    raise ImportError("Could not find generate_response() in scripts/genrate_response.py")
 
 
 @st.cache_resource
@@ -85,9 +80,9 @@ def render_recommended_cards(df: pd.DataFrame):
 
     for _, row in df.iterrows():
         with st.container(border=True):
-            c1, c2 = st.columns([3, 1])
+            left, right = st.columns([3, 1])
 
-            with c1:
+            with left:
                 st.markdown(f"### {row.get('card_name', 'Unknown Card')}")
                 st.write(f"**Issuer:** {row.get('issuer', 'Not available')}")
                 st.write(f"**Network:** {row.get('network', 'Not available')}")
@@ -95,13 +90,12 @@ def render_recommended_cards(df: pd.DataFrame):
                 st.write(f"**Best Categories:** {row.get('best_categories', 'Not available')}")
                 st.write(f"**Why it fits:** {row.get('reason', 'No explanation available')}")
 
-            with c2:
+            with right:
                 st.metric("Annual Fee", format_currency(row.get("annual_fee_value")))
-                if "total_score" in row:
-                    try:
-                        st.metric("Score", f"{float(row.get('total_score')):.2f}")
-                    except Exception:
-                        st.metric("Score", str(row.get("total_score")))
+                try:
+                    st.metric("Score", f"{float(row.get('total_score', 0)):.2f}")
+                except Exception:
+                    st.metric("Score", str(row.get("total_score", "N/A")))
 
 
 def render_chunks(card_chunks_map: Dict[str, list]):
@@ -122,7 +116,7 @@ def render_chunks(card_chunks_map: Dict[str, list]):
                 st.write(f"Section: {chunk.get('section', 'Unknown')}")
                 st.text_area(
                     label=f"{card_name} chunk {i}",
-                    value=str(chunk.get("document", ""))[:2000],
+                    value=str(chunk.get("document", ""))[:2500],
                     height=180,
                     key=f"{card_name}_{i}",
                     label_visibility="collapsed",
@@ -132,22 +126,22 @@ def render_chunks(card_chunks_map: Dict[str, list]):
 def main():
     st.title("💳 Credit Card Recommendation Advisor")
     st.write(
-        "Ask for the best card based on your preferences. "
-        "This app uses structured ranking plus retrieved card context."
+        "This app uses structured card ranking, retrieved card context, and a local Ollama model "
+        "to generate the final explanation."
     )
 
     with st.sidebar:
-        st.header("Your Preferences")
+        st.header("User Preferences")
 
         user_query = st.text_area(
             "Query",
-            value="best card for getting cashback from grocery",
+            value="best credit card for groceries and dining with low annual fee",
             height=100,
         )
 
-        income = st.number_input("Personal Income", min_value=0, value=90000, step=1000)
-        household_income = st.number_input("Household Income", min_value=0, value=60000, step=1000)
-        max_annual_fee = st.number_input("Max Annual Fee", min_value=0, value=100, step=10)
+        income = st.number_input("Personal Income", min_value=0, value=70000, step=1000)
+        household_income = st.number_input("Household Income", min_value=0, value=0, step=1000)
+        max_annual_fee = st.number_input("Max Annual Fee", min_value=0, value=180, step=10)
 
         preferred_rewards = st.selectbox(
             "Preferred Rewards Type",
@@ -180,7 +174,7 @@ def main():
                 "cashback",
                 "daily_spend",
             ],
-            default=["grocery"],
+            default=["grocery", "dining"],
         )
 
         issuer = st.selectbox(
@@ -209,65 +203,79 @@ def main():
         )
 
         top_n = st.slider("Number of Recommendations", min_value=1, max_value=10, value=3)
+        ollama_model = st.text_input("Ollama Model", value="gemma3:1b")
 
-        show_prompt = st.checkbox("Show LLM Prompt", value=False)
         show_chunks = st.checkbox("Show Retrieved Chunks", value=False)
+        show_prompt = st.checkbox("Show LLM Prompt", value=False)
+        show_fallback = st.checkbox("Show Fallback Response", value=False)
 
         run_button = st.button("Recommend Cards", use_container_width=True)
 
-    if run_button:
-        try:
-            generate_response = get_generate_response_func()
+    if not run_button:
+        st.info("Set your preferences in the sidebar and click **Recommend Cards**.")
+        return
 
-            user_profile = build_user_profile(
-                income=income,
-                household_income=household_income,
-                max_annual_fee=max_annual_fee,
-                preferred_rewards=preferred_rewards,
-                target_categories=target_categories,
-                issuer=issuer,
-                network=network,
+    try:
+        generate_response = get_generate_response_func()
+
+        user_profile = build_user_profile(
+            income=income,
+            household_income=household_income,
+            max_annual_fee=max_annual_fee,
+            preferred_rewards=preferred_rewards,
+            target_categories=target_categories,
+            issuer=issuer,
+            network=network,
+        )
+
+        with st.spinner("Generating recommendations with Ollama..."):
+            result = generate_response(
+                user_query=user_query,
+                user_profile=user_profile,
+                top_n=top_n,
+                save_outputs=False,
+                provider="ollama",
+                model=ollama_model,
             )
 
-            with st.spinner("Generating recommendations..."):
-                result = generate_response(
-                    user_query=user_query,
-                    user_profile=user_profile,
-                    top_n=top_n,
-                    save_outputs=False,
-                )
+        recommended_cards = result.get("recommended_cards")
+        final_response = result.get("final_response", "")
+        fallback_response = result.get("fallback_response", "")
+        prompt = result.get("prompt", "")
+        card_chunks_map = result.get("card_chunks_map", {})
+        llm_error = result.get("llm_error")
 
-            recommended_cards = result.get("recommended_cards")
-            fallback_response = result.get("fallback_response", "")
-            prompt = result.get("prompt", "")
-            card_chunks_map = result.get("card_chunks_map", {})
+        tab1, tab2 = st.tabs(["Recommendations", "Final Explanation"])
 
-            tab1, tab2 = st.tabs(["Recommendations", "Explanation"])
+        with tab1:
+            render_recommended_cards(recommended_cards)
 
-            with tab1:
-                render_recommended_cards(recommended_cards)
+        with tab2:
+            st.subheader("Generated Recommendation")
+            st.write(final_response if final_response else fallback_response)
 
-            with tab2:
-                st.subheader("Final Generated Explanation")
-                st.write(fallback_response)
+            if llm_error:
+                st.warning(f"Ollama issue detected. Fallback may have been used.\n\n{llm_error}")
 
-            if show_chunks:
-                render_chunks(card_chunks_map)
+        if show_fallback:
+            st.subheader("Fallback Response")
+            st.write(fallback_response)
 
-            if show_prompt:
-                st.subheader("LLM Prompt Preview")
-                st.text_area(
-                    "Prompt",
-                    value=prompt[:12000],
-                    height=400,
-                    key="prompt_preview",
-                )
+        if show_chunks:
+            render_chunks(card_chunks_map)
 
-        except Exception as e:
-            st.error(f"Something went wrong: {e}")
-            st.exception(e)
-    else:
-        st.info("Set your preferences in the sidebar and click **Recommend Cards**.")
+        if show_prompt:
+            st.subheader("LLM Prompt Preview")
+            st.text_area(
+                "Prompt",
+                value=prompt[:12000],
+                height=400,
+                key="prompt_preview",
+            )
+
+    except Exception as e:
+        st.error(f"Something went wrong: {e}")
+        st.exception(e)
 
 
 if __name__ == "__main__":

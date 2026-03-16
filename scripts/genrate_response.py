@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -57,6 +56,10 @@ def build_fallback_response(result: Dict[str, Any], user_query: str) -> str:
         f"Best overall choice: {best.get('card_name', 'This card')} "
         f"because it ranks highest for your current preferences."
     )
+    lines.append("")
+    lines.append(
+        "This summary is based on your structured recommendation results and retrieved card context."
+    )
 
     return "\n".join(lines)
 
@@ -67,8 +70,10 @@ def build_llm_messages(prompt: str) -> List[Dict[str, str]]:
             "role": "system",
             "content": (
                 "You are a helpful Canadian credit card recommendation assistant. "
-                "Use only the provided context. Do not invent benefits, fees, or eligibility rules. "
-                "Explain why each recommended card fits the user's needs, mention tradeoffs clearly, "
+                "Use only the provided context. "
+                "Do not invent benefits, fees, welcome bonuses, or eligibility rules. "
+                "Explain why each recommended card fits the user's needs, "
+                "mention annual fee tradeoffs clearly, "
                 "and identify the best overall option."
             ),
         },
@@ -79,24 +84,13 @@ def build_llm_messages(prompt: str) -> List[Dict[str, str]]:
     ]
 
 
-def call_openai(messages: List[Dict[str, str]], model: str = "gpt-5") -> str:
-    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
-    response = client.responses.create(
-        model=model,
-        input=messages,
-    )
-
-    return response.output_text.strip()
-
-
 def call_ollama_openai_compat(
     messages: List[Dict[str, str]],
-    model: str = "qwen3:latest",
-    base_url: str = "http://localhost:11434/v1",
+    model: str = "gemma3:1b",
+    base_url: str = "http://localhost:11434/v1/",
 ) -> str:
     client = OpenAI(
-        api_key="ollask-proj-29IXsQ0-QhV05pcqcA_SqLLsgjiOrWF6QBjsuem03LyFGadC7bwsOnWXK7gLd-AcQFx_kPoK2IT3BlbkFJr6S1uSvnSY_cvpAl1HaB-Lz-Vqd7Z8jUNDR_tSDJG_3jiWJ1hLmP6iWgEOGhn0DCv6Igqq4PIAma",  # placeholder for local Ollama
+        api_key="ollama",
         base_url=base_url,
     )
 
@@ -113,7 +107,7 @@ def generate_response(
     user_profile: Dict[str, Any],
     top_n: int = 3,
     save_outputs: bool = True,
-    provider: str = "openai",   # "openai" or "ollama"
+    provider: str = "ollama",
     model: Optional[str] = None,
 ) -> Dict[str, Any]:
     explain_result = explain_recommendation(
@@ -130,18 +124,14 @@ def generate_response(
     llm_error = None
 
     try:
-        if provider == "openai":
-            final_response = call_openai(
-                llm_messages,
-                model=model or "gpt-5",
-            )
-        elif provider == "ollama":
+        if provider == "ollama":
             final_response = call_ollama_openai_compat(
                 llm_messages,
-                model=model or "qwen3:latest",
+                model=model or "gemma3:1b",
             )
         else:
             llm_error = f"Unknown provider: {provider}. Using fallback response."
+            final_response = fallback_response
     except Exception as e:
         llm_error = str(e)
         final_response = fallback_response
@@ -156,7 +146,7 @@ def generate_response(
         "fallback_response": fallback_response,
         "final_response": final_response,
         "provider": provider,
-        "model": model or ("gpt-5" if provider == "openai" else "qwen3:latest"),
+        "model": model or "gemma3:1b",
         "llm_error": llm_error,
     }
 
@@ -202,6 +192,11 @@ def print_result_summary(result: Dict[str, Any]) -> None:
         print("\n=== LLM ERROR / FALLBACK USED ===")
         print(result["llm_error"])
 
+    if result.get("prompt_path"):
+        print("\nPrompt saved to:", result["prompt_path"])
+    if result.get("response_path"):
+        print("Response saved to:", result["response_path"])
+
 
 def main() -> None:
     user_query = "best credit card for groceries and dining with low annual fee"
@@ -221,8 +216,8 @@ def main() -> None:
         user_profile=user_profile,
         top_n=3,
         save_outputs=True,
-        provider="openai",   # change to "ollama" for local
-        model=None,
+        provider="ollama",
+        model="gemma3:1b",
     )
 
     print_result_summary(result)
