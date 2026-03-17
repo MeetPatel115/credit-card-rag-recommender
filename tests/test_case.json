@@ -1,0 +1,106 @@
+[
+  {
+    "query": "Based only on the available Canadian credit cards in the dataset, which card is best for groceries and recurring bills with a moderate annual fee?",
+    "user_profile": {
+      "income": 75000,
+      "household_income": 110000,
+      "max_annual_fee": 150,
+      "preferred_rewards": "cashback",
+      "target_categories": ["grocery", "recurring bills"],
+      "issuer": null,
+      "network": null
+    },
+    "expected_keywords": ["grocery", "recurring", "annual fee", "cashback"]
+  },
+  {
+    "query": "From the cards in the dataset, suggest a Canadian card with no foreign transaction fee for frequent travel.",
+    "user_profile": {
+      "income": 90000,
+      "household_income": 140000,
+      "max_annual_fee": 200,
+      "preferred_rewards": "travel",
+      "target_categories": ["travel"],
+      "issuer": null,
+      "network": null
+    },
+    "expected_keywords": ["foreign transaction fee", "travel", "card", "annual fee"]
+  },
+  {
+    "query": "Which card in the dataset is the strongest option for airport lounge access and travel rewards?",
+    "user_profile": {
+      "income": 120000,
+      "household_income": 180000,
+      "max_annual_fee": 700,
+      "preferred_rewards": "travel",
+      "target_categories": ["travel"],
+      "issuer": null,
+      "network": null
+    },
+    "expected_keywords": ["lounge", "travel", "rewards", "annual fee"]
+  },
+  {
+    "query": "Recommend a card from the dataset for gas, groceries, and recurring payments, and explain the tradeoff in annual fee.",
+    "user_profile": {
+      "income": 80000,
+      "household_income": 120000,
+      "max_annual_fee": 180,
+      "preferred_rewards": "cashback",
+      "target_categories": ["gas", "grocery", "recurring bills"],
+      "issuer": null,
+      "network": null
+    },
+    "expected_keywords": ["gas", "grocery", "recurring", "annual fee"]
+  },
+  {
+    "query": "Which scraped credit card is best for dining rewards in Canada if I want a low annual fee?",
+    "user_profile": {
+      "income": 70000,
+      "household_income": 100000,
+      "max_annual_fee": 100,
+      "preferred_rewards": "points",
+      "target_categories": ["dining"],
+      "issuer": null,
+      "network": null
+    },
+    "expected_keywords": ["dining", "annual fee", "rewards", "card"]
+  },
+  {
+    "query": "Looking only at the cards in the dataset, recommend a travel card and mention whether it has foreign transaction fees.",
+    "user_profile": {
+      "income": 95000,
+      "household_income": 150000,
+      "max_annual_fee": 250,
+      "preferred_rewards": "travel",
+      "target_categories": ["travel"],
+      "issuer": null,
+      "network": null
+    },
+    "expected_keywords": ["travel", "foreign transaction fee", "annual fee", "card"]
+  },
+  {
+    "query": "Among the available cards in the dataset, which one is best for entertainment and dining rewards?",
+    "user_profile": {
+      "income": 78000,
+      "household_income": 125000,
+      "max_annual_fee": 150,
+      "preferred_rewards": "points",
+      "target_categories": ["dining", "entertainment"],
+      "issuer": null,
+      "network": null
+    },
+    "expected_keywords": ["dining", "entertainment", "rewards", "annual fee"]
+  },
+  {
+    "query": "Recommend a no-fee or low-fee card from the dataset for everyday spending in groceries and gas.",
+    "user_profile": {
+      "income": 65000,
+      "household_income": 95000,
+      "max_annual_fee": 50,
+      "preferred_rewards": "cashback",
+      "target_categories": ["grocery", "gas"],
+      "issuer": null,
+      "network": null
+    },
+    "expected_keywords": ["grocery", "gas", "annual fee", "cashback"]
+  }
+]

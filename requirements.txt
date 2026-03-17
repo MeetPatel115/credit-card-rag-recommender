@@ -1,8 +1,32 @@
+# Core Python utilities
 python-dotenv
-pydantic
+requests
+tqdm
+
+# Data processing
 pandas
+numpy
 
-chromadb
+# Web scraping
+beautifulsoup4
+selenium
+webdriver-manager
+lxml
+
+# Embeddings / NLP
 sentence-transformers
+transformers
+torch
 
-pytest
+# Vector database
+faiss-cpu
+scikit-learn
+
+# LLM interaction
+ollama
+
+# JSON & file utilities
+pydantic
+
+# Evaluation / testing
+tabulate
